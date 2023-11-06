@@ -11,7 +11,7 @@ from django_tgbot_vip.types.replykeyboardremove import ReplyKeyboardRemove
 from django_tgbot_vip.types.inlinekeyboardmarkup import InlineKeyboardMarkup
 from django_tgbot_vip.types.inlinekeyboardbutton import InlineKeyboardButton
 from Account.models import *
-
+from Bot.credentials import APP_NAME
 
 keboard_delete = ReplyKeyboardRemove.a(
     remove_keyboard = True
@@ -27,6 +27,16 @@ keboard_people =ReplyKeyboardMarkup.a(
             ]
         ) 
 
+keboard_choice =ReplyKeyboardMarkup.a(
+            one_time_keyboard=True,
+            resize_keyboard=True,
+            keyboard=[
+                [KeyboardButton.a('1'),KeyboardButton.a('2'),KeyboardButton.a('3')],
+                [KeyboardButton.a('4'),KeyboardButton.a('5'),KeyboardButton.a('6')],
+                [KeyboardButton.a('7'),KeyboardButton.a('8'),KeyboardButton.a('9')],
+                [KeyboardButton.a('10'),KeyboardButton.a('11'),KeyboardButton.a('12')],
+            ]
+        ) 
 
 
 @processor(state_manager, from_states=None ,fail=state_types.Keep )
@@ -37,7 +47,7 @@ def hello_world(bot: TelegramBot, update: Update, state: TelegramState):
         chatid = update.get_chat().get_id() 
         
         bot.sendMessage(chatid , "خوش آمدید، من روزانه تعدادی آیه برای شما ارسال میکنم که بخوانید، روزی چند آیه؟ شما به من بگویید"
-                        , reply_markup= keboard_people )
+                        , reply_markup= keboard_choice )
 
         if not PeopleModel.objects.filter(Chatid = chatid ).exists():
             uid = uuid.uuid4()
@@ -54,12 +64,13 @@ def hello_world(bot: TelegramBot, update: Update, state: TelegramState):
                 "R_qoran":{
                             "number" : 0 ,
                             "numbers" : [] ,
+                            "favnumbers" : [] ,
                         },
             }
 
-            PeopleModel.objects.create(Chatid = chatid , ReadDetails = a , DailyRead = 3 , Uuid = uid )
+            PeopleModel.objects.create(Chatid = chatid ,Read = b ,  ReadDetails = a , DailyRead = 3 , Uuid = uid )
         
-        state.name = "pe-"
+        state.name = "choice-daily-read"
         
     except:
         pass
@@ -98,6 +109,26 @@ def change_bot_permision(bot: TelegramBot, update: Update, state: TelegramState)
         pass # خوش برگشتی، دفعه بعد با ملایمت باهام برخورد کن من ناراحت میشم:)
     
 
+
+
+@processor(state_manager, from_states="choice-daily-read" ,fail=state_types.Keep )
+def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
+    try:
+        text = int(update.get_message().get_text())
+        chatid = update.get_chat().get_id() 
+        people = PeopleModel.objects.get(Chatid = chatid )
+        people.DailyRead = int(text) 
+        people.save()
+        bot.sendMessage(chat_id= chatid , text= "تنظیم شد" , reply_markup = keboard_people )
+        state.name = 'pe-'
+
+    except Exception as e :
+        bot.sendMessage(chat_id= chatid , text= f"error > { e }" , reply_markup = keboard_people )
+
+    state.save()
+    
+
+
 @processor(state_manager, from_states="pe-" ,fail=state_types.Keep )
 def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
     try:
@@ -108,73 +139,99 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
                         , reply_markup= keboard_people )
                         
         if text == "دریافت آیه جدید" :
-            v = VersesModel.objects.get(Number = people.ReadNumber() + 1 )
+            number = people.ReadNumber()
+            v = VersesModel.objects.get(Number = number + 1 )
             people.addRead()
             text = f"""بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ 
 {v.Arabic}
 
 فارسی:
 {v.Persian}
-            
+
             """
+
+            people.addRead(number = number )
+
             bot.sendMessage(chatid ,text 
                         , reply_markup=InlineKeyboardMarkup.a(
                                     inline_keyboard = [
                                         [InlineKeyboardButton.a('افزودن به علاقمندی' 
-                                                        , url=f"https://t.me/sicheckbot?start=fav-{v.Number}" )],
+                                                        , url=f"https://t.me/{APP_NAME}?start=fav-{v.Number}" )],
                                         [InlineKeyboardButton.a('اشتراک گذاری' 
                                                         ,switch_inline_query="Shared message" )],
+                                        [InlineKeyboardButton.a('بازگشت' 
+                                                        ,url=f"https://t.me/{APP_NAME}?start=back" )],
                                     ]
                                 )
                                 
                         )
 
+            state.name = "pe-"
+
         elif text == "دریافت آیه رندم" :
-            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد")   
+            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_choice )  
+            state.name = "pe-"
+
 
         elif text == "مشاهده علاقمندی ها" :
-            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد")   
-    
+            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_choice )   
+            state.name = "pe-"
 
         elif text == "تنظیم تعداد آیه در روز" :
-            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد")   
+            bot.sendMessage(chatid , 'بسیار خب ،انتخاب کنید'  , reply_markup= keboard_choice )  
+            state.name = "choice-daily-read" 
             
         elif text == "دعوت دوست" :
-            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد") 
+            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_choice ) 
+            state.name = "pe-"
+
         elif text == "درباره ربات" :
-            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد") 
+            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_choice ) 
+            state.name = "pe-"
+
         elif text == "جستجوی یک سوره" :
-            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد")     
+            bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_choice ) 
+            state.name = "pe-"
+
         
-        state.name = "pe-"
         
     except:
         pass
 
     state.save()
+    people.save()
+
 
 
 
     
 @processor(state_manager, from_states=state_types.All )
-def add_to_fav(bot: TelegramBot, update: Update, state: TelegramState):
-    text = update.get_message().get_text()
+def manage_start_message(bot: TelegramBot, update: Update, state: TelegramState):
+    try :
+        text = update.get_message().get_text()
 
-    text= str(text[text.find(" ") + 1 :])
-    chatid = update.get_chat().get_id() 
+        text= str(text[text.find(" ") + 1 :])
+        chatid = update.get_chat().get_id() 
 
-    if text.startswith("fav-"):
-        try:
-            people = PeopleModel.objects.get(Chatid = chatid )
-        except:
-            return None
-        
-        number = int(text[5:])
-        if number < 6236 :
-            people.addFavRead(number)
-        else:
-            text = "آیه یافت نشد"
+        if text.startswith("fav-"):
+            try:
+                people = PeopleModel.objects.get(Chatid = chatid )
+            except:
+                return None
+            
+            number = int(text[5:])
+            if number < 6236 :
+                people.addFavRead(number)
+            else:
+                text = "آیه یافت نشد"
 
-        text = "آیه به لیست علاقمندی های شما اضافه شد"
+            text = "آیه به لیست علاقمندی های شما اضافه شد"
 
-        bot.sendMessage(chatid , text , reply_markup= keboard_people)
+            bot.sendMessage(chatid , text , reply_markup= keboard_people)
+
+        elif text.startswith("back"):
+
+            bot.sendMessage(chatid , "بازگشت به منو اصلی" , reply_markup= keboard_people)
+    
+    except:
+        pass

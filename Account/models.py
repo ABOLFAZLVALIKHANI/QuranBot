@@ -51,9 +51,9 @@ class PeopleModel(models.Model):
     def ReadList(self):
         return self.Read["R_qoran"]["numbers"]
 
-    def addRead(self ):
+    def addRead(self , number ):
         self.Read["R_qoran"]["number"] += 1
-        self.Read["R_qoran"]["numbers"].append( self.Read["R_qoran"]["number"] )
+        self.Read["R_qoran"]["numbers"].append( number )
         self.save()
     
     def addFavRead(self , number ):
