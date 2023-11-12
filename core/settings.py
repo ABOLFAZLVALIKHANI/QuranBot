@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-h^!07j#-ya9q9!6z1rccpe()6a7!k6rg6wkx1(jw%kgd4c(okv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['fcf3-217-146-89-18.ngrok-free.app' , '127.0.0.1']
+if DEBUG :
+    ALLOWED_HOSTS = ['d4c5-2a09-bac5-41d9-1282-00-1d8-184.ngrok-free.app' , '127.0.0.1']
+else:
+    ALLOWED_HOSTS = ['botquran.ir']
 
 
 # Application definition
@@ -78,12 +81,25 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'botquran_core',
+            'USER': 'botquran_bot',
+            'PASSWORD': '021ABOLfAZl120!@kk',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'OPTIONS': {'charset': 'utf8mb4','use_unicode': True,}
+        }
+    } 
 
 
 # Password validation

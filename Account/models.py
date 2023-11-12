@@ -14,12 +14,12 @@ class PeopleModel(models.Model):
     People = models.OneToOneField(User,on_delete=models.CASCADE,verbose_name="کاربری",related_name="people")
     Read = models.JSONField(verbose_name="آیه های خوانده شده", null = True , default=dict )
     Read.help_text = {
-                "R_qoran":{
-                            "number" : 0 ,
-                            "numbers" : [] ,
-                            "favnumbers" : [] ,
-                        },
-    }
+  "R_qoran": {
+    "number": 0,
+    "numbers": [],
+    "favnumbers": []
+  }
+}
 
     ReadDetails = models.JSONField(verbose_name="جزییات خوانده شده ها", null = True , default=dict )
     ReadDetails.help_text={
