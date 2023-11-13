@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path , include
 from Bot import urls as Bot_url
+from Account import urls as account_url
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('adminabolfazl/', admin.site.urls),
     path('bot/' , include(Bot_url)),
+    path('/' , include(account_url)),
 ]

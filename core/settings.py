@@ -28,7 +28,7 @@ DEBUG = True
 if DEBUG :
     ALLOWED_HOSTS = ['d4c5-2a09-bac5-41d9-1282-00-1d8-184.ngrok-free.app' , '127.0.0.1']
 else:
-    ALLOWED_HOSTS = ['botquran.ir']
+    ALLOWED_HOSTS = ['botqu.ir']
 
 
 # Application definition
