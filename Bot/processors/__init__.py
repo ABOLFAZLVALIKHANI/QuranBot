@@ -1,1 +1,1 @@
-from . import processors
+from . import processors , admin

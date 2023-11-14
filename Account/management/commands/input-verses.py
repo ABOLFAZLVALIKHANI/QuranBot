@@ -16,7 +16,7 @@ class Command(BaseCommand):
         try:
             
             if DEBUG:
-                path =  f"{BASE_DIR}\data.xlsx"
+                path =  f"{BASE_DIR}/data.xlsx"
             else:    
                 path =  f"{BASE_DIR}/data.xlsx"
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
             row = sheet.max_row 
             
-            for i in range(2 , 20):
+            for i in range(3 , row ):
                 number = i - 1 
                 arabic = sheet.cell(row= i , column= 2).value
                 persian = sheet.cell(row= i , column= 3).value

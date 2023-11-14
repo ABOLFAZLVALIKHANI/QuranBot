@@ -5,6 +5,8 @@ from django_tgbot_vip.management import helpers
 from Account.models import PeopleModel , VersesModel
 from Bot.bot import TelegramBot
 from Bot.processors.processors import keboard_people
+from django_tgbot_vip.bot_api_user import BotAPIUser
+from Bot.credentials import BOT_TOKEN
 
 class Command(BaseCommand):
     help = 'send Verses to user'
@@ -33,8 +35,8 @@ class Command(BaseCommand):
                     DailyRead -= 1 
                     number += 1
                     
-
-                TelegramBot.sendMessage( chat_id= people.Chatid , text= text , reply_markup= keboard_people )
+                bot = BotAPIUser(BOT_TOKEN)
+                bot.sendMessage( chat_id= people.Chatid , text= text , reply_markup= keboard_people )
                 people.save()
 
         except Exception as e :
