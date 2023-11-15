@@ -10,7 +10,7 @@ from django_tgbot_vip.types.keyboardbutton import KeyboardButton
 from django_tgbot_vip.types.replykeyboardremove import ReplyKeyboardRemove
 from django_tgbot_vip.types.inlinekeyboardmarkup import InlineKeyboardMarkup
 from django_tgbot_vip.types.inlinekeyboardbutton import InlineKeyboardButton
-from Account.models import PeopleModel , VersesModel , MessageModel
+from Account.models import PeopleModel , WordsModel , MessageModel
 from django.contrib.auth.models import User
 from Bot.credentials import APP_NAME , admin_chati_id
 import uuid 
@@ -23,21 +23,21 @@ keboard_people =ReplyKeyboardMarkup.a(
             one_time_keyboard=True,
             resize_keyboard=True,
             keyboard=[
-                [KeyboardButton.a("دریافت آیه جدید"),KeyboardButton.a('دریافت آیه رندم')],
-                [KeyboardButton.a('مشاهده علاقمندی ها'),KeyboardButton.a('تنظیم تعداد آیه در روز')],
+                [KeyboardButton.a("دریافت کلمه جدید"),KeyboardButton.a('دریافت کلمه رندم')],
+                [KeyboardButton.a('مشاهده علاقمندی ها'),KeyboardButton.a('تنظیم تعداد کلمه در روز')],
                 [ KeyboardButton.a('جستجوی یک سوره')],
                 [KeyboardButton.a('دعوت دوست'), KeyboardButton.a('درباره ربات')],
             ]
         ) 
 
-"دریافت 10 آیه بعدی"
+"دریافت 10 کلمه بعدی"
 
 keboard_admin = ReplyKeyboardMarkup.a(
             one_time_keyboard=True,
             resize_keyboard=True,
             keyboard=[
-                [KeyboardButton.a("دریافت آیه جدید"),KeyboardButton.a('دریافت آیه رندم')],
-                [KeyboardButton.a('مشاهده علاقمندی ها'),KeyboardButton.a('تنظیم تعداد آیه در روز')],
+                [KeyboardButton.a("دریافت کلمه جدید"),KeyboardButton.a('دریافت کلمه رندم')],
+                [KeyboardButton.a('مشاهده علاقمندی ها'),KeyboardButton.a('تنظیم تعداد کلمه در روز')],
                 [KeyboardButton.a('جستجوی یک سوره')],
                 [KeyboardButton.a('پیغام به همه')],
             ]
@@ -62,7 +62,7 @@ def hello_world(bot: TelegramBot, update: Update, state: TelegramState):
         # bot.sendMessage(update.get_chat().get_id(), text)   
         chatid = update.get_chat().get_id() 
 
-        bot.sendMessage(chatid , "خوش آمدید، من روزانه تعدادی آیه برای شما ارسال میکنم که بخوانید، روزی چند آیه؟ شما به من بگویید"
+        bot.sendMessage(chatid , "خوش آمدید، من روزانه تعدادی کلمه برای شما ارسال میکنم که بخوانید، روزی چند کلمه؟ شما به من بگویید"
                         , reply_markup= keboard_choice )
 
         if not PeopleModel.objects.filter(Chatid = chatid ).exists():
@@ -71,14 +71,14 @@ def hello_world(bot: TelegramBot, update: Update, state: TelegramState):
             if PeopleModel.objects.filter(Uuid = uid ).exists():
                 uid = uuid.uuid5(uid , "AbolfazlBots" )
             a= {
-                "d_qoran":{
+                "d_words":{
                             "start" : [] ,
                             "end" : [] ,
                             "count" : 0 ,
                         },
             }
             b = {
-                "R_qoran":{
+                "R_words":{
                             "number" : 0 ,
                             "numbers" : [] ,
                             "favnumbers" : [] ,
@@ -87,7 +87,7 @@ def hello_world(bot: TelegramBot, update: Update, state: TelegramState):
             us = User.objects.create(username = chatid)
             us.set_password(chatid)
             us.save()
-            PeopleModel.objects.create(Chatid = chatid , People = us  ,Read = b ,  ReadDetails = a , DailyRead = 3 , Uuid = uid , Lang = 1 )
+            PeopleModel.objects.create(Chatid = chatid , People = us  ,Read = b ,  ReadDetails = a , DailyRead = 3 , Uuid = uid  )
         
         state.name = "choice-daily-read"
 
@@ -100,34 +100,34 @@ def hello_world(bot: TelegramBot, update: Update, state: TelegramState):
 
 
 
-@processor(state_manager, from_states=state_types.All,fail=state_types.Keep  , update_types= update_types.MyChatMember )
-def change_bot_permision(bot: TelegramBot, update: Update, state: TelegramState):
-    chatid_channel = update.get_my_chat_member().get_chat().get_id()
-    title_channel = update.get_my_chat_member().get_chat().get_title()
-    user_id = update.get_my_chat_member().get_user().get_id()
-    status = update.get_my_chat_member().get_new_chat_member().get_status()
-    status_old = update.get_my_chat_member().get_old_chat_member().get_status()
+# @processor(state_manager, from_states=state_types.All,fail=state_types.Keep  , update_types= update_types.MyChatMember )
+# def change_bot_permision(bot: TelegramBot, update: Update, state: TelegramState):
+#     chatid_channel = update.get_my_chat_member().get_chat().get_id()
+#     title_channel = update.get_my_chat_member().get_chat().get_title()
+#     user_id = update.get_my_chat_member().get_user().get_id()
+#     status = update.get_my_chat_member().get_new_chat_member().get_status()
+#     status_old = update.get_my_chat_member().get_old_chat_member().get_status()
 
-    print("saaaaaaaaalaaaaaaaaaam delbar ")
-    print( status_old + "->" + status )
+#     # print("saaaaaaaaalaaaaaaaaaam delbar ")
+#     # print( status_old + "->" + status )
 
-    if status_old  in [ "left" , "kicked" ]  and status == "administrator" :
-        pass 
-    elif status == "administrator" :
-        try:
-            t="برای مدیریت اشتراک کاربران، نیاز به دسترسی های لازم داریم، لطفا به ربات در کانالتان اجازه اضافه کردن کاربران را بدهید"
-            bot.sendMessage(a.chatid ,t,reply_markup=ReplyKeyboardMarkup.a(
-                            one_time_keyboard=True,
-                            resize_keyboard=True,
-                            keyboard= keboard_analyzer
-                            ) 
-                        ) 
-        except:
-            pass 
-    elif status_old == "member" and status == "kicked" : # کاربر ربات را متوقف میکند
-        print("man injam")
-    elif status_old == "kicked" and status == "member" : # کاربر ربات را دوباره ران میکند 
-        pass # خوش برگشتی، دفعه بعد با ملایمت باهام برخورد کن من ناراحت میشم:)
+#     if status_old  in [ "left" , "kicked" ]  and status == "administrator" :
+#         pass 
+#     elif status == "administrator" :
+#         try:
+#             t="برای مدیریت اشتراک کاربران، نیاز به دسترسی های لازم داریم، لطفا به ربات در کانالتان اجازه اضافه کردن کاربران را بدهید"
+#             bot.sendMessage(a.chatid ,t,reply_markup=ReplyKeyboardMarkup.a(
+#                             one_time_keyboard=True,
+#                             resize_keyboard=True,
+#                             keyboard= keboard_analyzer
+#                             ) 
+#                         ) 
+#         except:
+#             pass 
+#     elif status_old == "member" and status == "kicked" : # کاربر ربات را متوقف میکند
+#         print("man injam")
+#     elif status_old == "kicked" and status == "member" : # کاربر ربات را دوباره ران میکند 
+#         pass # خوش برگشتی، دفعه بعد با ملایمت باهام برخورد کن من ناراحت میشم:)
     
 
 
@@ -140,7 +140,7 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
         people = PeopleModel.objects.get(Chatid = chatid )
         people.DailyRead = int(text) 
         people.save()
-        bot.sendMessage(chat_id= chatid , text= "تنظیم شد. از این پس من هر روز راس ساعت ۲۱:۰۰ برای تو همین تعداد ایه جدید و ارسال میکنم" , reply_markup = keboard_people )
+        bot.sendMessage(chat_id= chatid , text= "تنظیم شد. از این پس من هر روز راس ساعت ۲۱:۰۰ برای تو همین تعداد کلمه جدید و ارسال میکنم" , reply_markup = keboard_people )
         state.name = 'pe-'
 
     except Exception as e :
@@ -163,18 +163,18 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
             # bot.sendMessage(chatid , "ربات در خدمت شماست"
             #                 , reply_markup= keboard_people )
 
-            if text == "دریافت آیه جدید" :
+            if text == "دریافت کلمه جدید" :
                 number = people.ReadNumber() # این تابع میگه الان کدوم ایه هستش
-                v = VersesModel.objects.get(Number = number + 1 )
+                v = WordsModel.objects.get(Number = number + 1 )
                 # print('149')
                 people.addRead( number + 1 )
-                text = f"""بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ 
-{v.Arabic} ( { v.Number } / { v.Soreh })
-
-فارسی:
+                text = f"""{ v.Number } - {v.English}
 {v.Persian}
+------------
+{ v.ExampleEN }
+{ v.ExampleFA }
 
-                """
+"""
 
                 
                 bot.sendMessage(chatid ,text 
@@ -193,7 +193,7 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
 
                 state.name = "pe-"
 
-            elif text == "دریافت آیه رندم" :
+            elif text == "دریافت کلمه رندم" :
                 bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_people ) 
                 state.name = "pe-"
 
@@ -202,7 +202,7 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
                 bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_people )  
                 state.name = "pe-"
 
-            elif text == "تنظیم تعداد آیه در روز" :
+            elif text == "تنظیم تعداد کلمه در روز" :
                 bot.sendMessage(chatid , 'بسیار خب ،انتخاب کنید'  , reply_markup= keboard_choice )  
                 state.name = "choice-daily-read" 
                 
@@ -218,7 +218,7 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
                 bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_people )
                 state.name = "pe-"
             
-            elif text == "دریافت 10 آیه بعدی" :
+            elif text == "دریافت 10 کلمه بعدی" :
                 bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_admin ) 
                 state.name = "ad-"
 
@@ -255,9 +255,9 @@ def manage_start_message(bot: TelegramBot, update: Update, state: TelegramState)
                 if number < 6236 :
                     people.addFavRead(number)
                 else:
-                    text = "آیه یافت نشد"
+                    text = "کلمه یافت نشد"
 
-                text = "آیه به لیست علاقمندی های شما اضافه شد"
+                text = "کلمه به لیست علاقمندی های شما اضافه شد"
 
                 bot.sendMessage(chatid , text , reply_markup= keboard_people)
                 

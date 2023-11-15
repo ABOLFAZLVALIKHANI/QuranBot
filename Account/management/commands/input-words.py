@@ -10,7 +10,7 @@ from core.settings import BASE_DIR , DEBUG
 from Account.models import * 
 
 class Command(BaseCommand):
-    help = 'input Verses to model'
+    help = 'input Words to model'
 
     def handle(self, *args, **options):
         try:
@@ -26,21 +26,27 @@ class Command(BaseCommand):
 
             row = sheet.max_row 
             
-            for i in range(3 , row ):
+            for i in range(2 , row ):
                 number = i - 1 
-                arabic = sheet.cell(row= i , column= 2).value
+                English = sheet.cell(row= i , column= 2).value
                 persian = sheet.cell(row= i , column= 3).value
-                jose = sheet.cell(row= i , column= 5).value
-                soreh = sheet.cell(row= i , column= 7).value
-                
-                if not VersesModel.objects.filter(Arabic = arabic ).exists() :
-                    VersesModel.objects.create(
+                ExampleEN = sheet.cell(row= i , column= 6).value
+                ExampleFA = sheet.cell(row= i , column= 7).value
+                # pow 
+                # Example = sheet.cell(row= i , column= 7).value
+                # 
+                if not WordsModel.objects.filter(English = English ).exists() :
+
+                    WordsModel.objects.create(
                         Number = number ,
+                        English = English ,
                         Persian = persian ,
-                        Arabic = arabic ,
-                        Soreh = soreh ,
-                        Jose = jose 
+                        ExampleEN = ExampleEN  ,
+                        ExampleFA = ExampleFA  ,
                     )
+
+                    # DSFDFD 
+
         except Exception as e :
             raise CommandError(f'error for check portfo = {e}')
         

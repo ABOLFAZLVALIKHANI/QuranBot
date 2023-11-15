@@ -12,9 +12,9 @@ class PeopleModel(models.Model):
     
     Uuid = models.UUIDField(default=uuid.uuid4 , unique= True , editable=False)
     People = models.OneToOneField(User,on_delete=models.CASCADE,verbose_name="کاربری",related_name="people")
-    Read = models.JSONField(verbose_name="آیه های خوانده شده", null = True , default=dict )
+    Read = models.JSONField(verbose_name="کلمات خوانده شده", null = True , default=dict )
     Read.help_text = {
-  "R_qoran": {
+    "R_words": {
     "number": 0,
     "numbers": [],
     "favnumbers": []
@@ -23,59 +23,51 @@ class PeopleModel(models.Model):
 
     ReadDetails = models.JSONField(verbose_name="جزییات خوانده شده ها", null = True , default=dict )
     ReadDetails.help_text={
-        "d_qoran":{
+        "d_words":{
                     "start" : [] ,
                     "end" : [] ,
                     "count" : 0 ,
                 },
     }
     
-    DailyRead = models.IntegerField( verbose_name="تعداد آیه در روز" , null=True )
+    DailyRead = models.IntegerField( verbose_name="تعداد کلمه در روز" , null=True )
     Chatid = models.CharField(max_length=30,verbose_name="چت ایدی", blank=True , null= True )
 
 
-    persian = 1
-    arabic = 2
-    english = 3
-
-    StatusActiveChoice =((persian,"فارسی"),
-                (arabic,"عربی"),
-                (english,"انگلیسی"))
-
-    Lang = models.IntegerField(choices=StatusActiveChoice , verbose_name="زبان", default= 1 , null= False) 
+ 
     
 
     def ReadNumber(self):
-        return self.Read["R_qoran"]["number"]
+        return self.Read["R_words"]["number"]
 
     def ReadList(self):
-        return self.Read["R_qoran"]["numbers"]
+        return self.Read["R_words"]["numbers"]
 
     def addRead(self , number ):
-        self.Read["R_qoran"]["number"] += 1
-        self.Read["R_qoran"]["numbers"].append( number )
+        self.Read["R_words"]["number"] += 1
+        self.Read["R_words"]["numbers"].append( number )
         self.save()
     
     def addFavRead(self , number ):
-        self.Read["R_qoran"]["favnumbers"].append(number)
+        self.Read["R_words"]["favnumbers"].append(number)
         self.save()
         
 
-class VersesModel(models.Model):
+class WordsModel(models.Model):
     class Meta:
-        verbose_name="آیه"
-        verbose_name_plural="آیه ها"
+        verbose_name="کلمه"
+        verbose_name_plural="کلمه ها"
 
-    Number = models.IntegerField( verbose_name="شماره آیه" , null=True )
+    Number = models.IntegerField( verbose_name="شماره کلمه" , null=True )
     Persian = models.TextField(max_length=2000, verbose_name="فارسی",null= True)
     English = models.TextField(max_length=2000, verbose_name="انگلیسی",null= True)
-    Arabic = models.TextField(max_length=2000, verbose_name="عربی",null= True)
-    Soreh = models.TextField(max_length=100, verbose_name="سوره",null= True)
-    Jose = models.TextField(max_length=100, verbose_name="جز",null= True)
+    ExampleEN = models.TextField(max_length=2000, verbose_name="مثال انگلیسی",null= True)
+    ExampleFA = models.TextField(max_length=2000, verbose_name="مثال فارسی",null= True)
+
     Voice = models.ImageField(upload_to = "Voice/", verbose_name="صوت" , null= True , blank = True , validators =[validate_file_extension,validate_file_size] )
 
     def __str__(self) -> str:
-        return self.Number  
+        return str(self.English)
 
 class MessageModel(models.Model):
     class Meta:

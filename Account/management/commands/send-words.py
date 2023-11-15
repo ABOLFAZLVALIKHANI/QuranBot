@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand , CommandError
 
 from django_tgbot_vip.management import helpers
-from Account.models import PeopleModel , VersesModel
+from Account.models import PeopleModel , WordsModel
 from Bot.bot import TelegramBot
 from Bot.processors.processors import keboard_people
 from django_tgbot_vip.bot_api_user import BotAPIUser
@@ -20,17 +20,18 @@ class Command(BaseCommand):
                 text = str()
                 while DailyRead > 0 :
                     if number not in numberList :
-                        verse = VersesModel.objects.get( Number = number )
+                        v = WordsModel.objects.get( Number = number )
                     else:
                         number += 1
-                        verse = VersesModel.objects.get( Number = number )
+                        v = WordsModel.objects.get( Number = number )
 
-                    text = text + f"""
+                    text = text + f"""{ v.Number } - {v.English}
+{v.Persian}
+------------
+{ v.ExampleEN }
+{ v.ExampleFA }
 
-{verse.Arabic } ( { verse.Number } / { verse.Soreh })
-{verse.Persian }
-
-"""                 
+"""              
                     people.addRead(number= number )
                     DailyRead -= 1 
                     number += 1

@@ -10,7 +10,7 @@ from django_tgbot_vip.types.keyboardbutton import KeyboardButton
 from django_tgbot_vip.types.replykeyboardremove import ReplyKeyboardRemove
 from django_tgbot_vip.types.inlinekeyboardmarkup import InlineKeyboardMarkup
 from django_tgbot_vip.types.inlinekeyboardbutton import InlineKeyboardButton
-from Account.models import PeopleModel , VersesModel , MessageModel
+from Account.models import PeopleModel , WordsModel , MessageModel
 from django.contrib.auth.models import User
 from Bot.credentials import APP_NAME ,admin_chati_id
 import uuid 
@@ -55,18 +55,18 @@ def admin_panel(bot: TelegramBot, update: Update, state: TelegramState):
             # bot.sendMessage(chatid , "ربات در خدمت شماست"
             #                 , reply_markup= keboard_admin )
 
-            if text == "دریافت آیه جدید" :
+            if text == "دریافت کلمه جدید" :
                 number = people.ReadNumber() # این تابع میگه الان کدوم ایه هستش
-                v = VersesModel.objects.get(Number = number + 1 )
+                v = WordsModel.objects.get(Number = number + 1 )
                 # print('149')
                 people.addRead( number + 1 )
-                text = f"""بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ 
-{v.Arabic} ( { v.Number } / { v.Soreh })
-
-فارسی:
+                text = f"""{ v.Number } - {v.English}
 {v.Persian}
+------------
+{ v.ExampleEN }
+{ v.ExampleFA }
 
-                """
+"""
 
                 
                 bot.sendMessage(chatid ,text 
@@ -85,11 +85,11 @@ def admin_panel(bot: TelegramBot, update: Update, state: TelegramState):
 
                 state.name = "ad-"
 
-            elif text == "دریافت آیه رندم" :
+            elif text == "دریافت کلمه رندم" :
                 bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_admin ) 
                 state.name = "ad-"
 
-            elif text == "دریافت 10 آیه بعدی" :
+            elif text == "دریافت 10 کلمه بعدی" :
                 bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_admin ) 
                 state.name = "ad-"
 
@@ -97,7 +97,7 @@ def admin_panel(bot: TelegramBot, update: Update, state: TelegramState):
                 bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_admin )  
                 state.name = "ad-"
 
-            elif text == "تنظیم تعداد آیه در روز" :
+            elif text == "تنظیم تعداد کلمه در روز" :
                 bot.sendMessage(chatid , 'بسیار خب ،انتخاب کنید'  , reply_markup= keboard_choice )  
                 state.name = "choice-daily-read" 
                 

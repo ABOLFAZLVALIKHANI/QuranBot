@@ -23,10 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-h^!07j#-ya9q9!6z1rccpe()6a7!k6rg6wkx1(jw%kgd4c(okv'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: don't run with DEBUG turned on in production!
 DEBUG = True
+TEST = False
 
-if DEBUG :
+if TEST :
     ALLOWED_HOSTS = ['d4c5-2a09-bac5-41d9-1282-00-1d8-184.ngrok-free.app' , '127.0.0.1']
 else:
     ALLOWED_HOSTS = ['botqu.ir']
@@ -82,7 +83,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-if DEBUG:
+if TEST:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -93,8 +94,8 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'botquran_core',
-            'USER': 'botquran_bot',
+            'NAME': 'botquran_langbot',
+            'USER': 'botquran_langbot',
             'PASSWORD': '021ABOLfAZl120!@kk',
             'HOST': 'localhost',
             'PORT': '3306',
@@ -141,10 +142,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-if DEBUG:
+if TEST:
     print('BASE_DIR' , BASE_DIR )
-    STATIC_ROOT= '/home/abvalikhani/dev/quranbot/Quranbot/static'
-    MEDIA_ROOT='/home/abvalikhani/dev/quranbot/Quranbot/media'
+    STATIC_ROOT= '/home/abvalikhani/dev/quranBot/LangBot/static'
+    MEDIA_ROOT='/home/abvalikhani/dev/quranBot/LangBot/media'
     print('STATIC_ROOT' , STATIC_ROOT )
     print('MEDIA_ROOT' , MEDIA_ROOT )
     
