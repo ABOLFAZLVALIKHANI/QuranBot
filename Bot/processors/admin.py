@@ -55,17 +55,17 @@ def admin_panel(bot: TelegramBot, update: Update, state: TelegramState):
             # bot.sendMessage(chatid , "ربات در خدمت شماست"
             #                 , reply_markup= keboard_admin )
 
-            if text == "دریافت کلمه جدید" :
+            if text in ["دریافت کلمه جدید" , "/next" , "next"] :
                 number = people.ReadNumber() # این تابع میگه الان کدوم ایه هستش
                 v = WordsModel.objects.get(Number = number + 1 )
                 # print('149')
                 people.addRead( number + 1 )
                 text = f"""{ v.Number } - {v.English}
 {v.Persian}
-------------
 { v.ExampleEN }
 { v.ExampleFA }
-
+------------
+بعدی: /next
 """
 
                 
@@ -76,8 +76,6 @@ def admin_panel(bot: TelegramBot, update: Update, state: TelegramState):
                                                             , url=f"https://t.me/{APP_NAME}?start=fav-{v.Number}" )],
                                             [InlineKeyboardButton.a('اشتراک گذاری' 
                                                             ,switch_inline_query=text)],
-                                            [InlineKeyboardButton.a('بازگشت' 
-                                                            ,url=f"https://t.me/{APP_NAME}?start=back" )],
                                         ]
                                     )
                                     
@@ -86,7 +84,34 @@ def admin_panel(bot: TelegramBot, update: Update, state: TelegramState):
                 state.name = "ad-"
 
             elif text == "دریافت کلمه رندم" :
-                bot.sendMessage(chatid , "این بخش به زودی فعال خواهد شد" , reply_markup = keboard_admin ) 
+                import random
+                number = random.choice(people.ReadList())
+                v = WordsModel.objects.get(Number = number )
+                
+                text = f""" { v.Number } - {v.English}
+<span class="tg-spoiler"> 
+{v.Persian}
+</span>
+{ v.ExampleEN }
+<span class="tg-spoiler"> 
+{ v.ExampleFA }
+</span>
+
+"""
+                bot.sendMessage(chatid ,text 
+                            , reply_markup=InlineKeyboardMarkup.a(
+                                        inline_keyboard = [
+                                            [InlineKeyboardButton.a('افزودن به علاقمندی' 
+                                                            , url=f"https://t.me/{APP_NAME}?start=fav-{v.Number}" )],
+                                            [InlineKeyboardButton.a('اشتراک گذاری' 
+                                                            ,switch_inline_query=text)],
+                                        ]
+                                    )
+                                    
+                            , parse_mode="HTML" )
+
+
+
                 state.name = "ad-"
 
             elif text == "دریافت 10 کلمه بعدی" :

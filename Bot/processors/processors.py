@@ -163,17 +163,16 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
             # bot.sendMessage(chatid , "ربات در خدمت شماست"
             #                 , reply_markup= keboard_people )
 
-            if text == "دریافت کلمه جدید" :
+            if text in ["دریافت کلمه جدید" , "/next" , "next"] :
                 number = people.ReadNumber() # این تابع میگه الان کدوم ایه هستش
                 v = WordsModel.objects.get(Number = number + 1 )
                 # print('149')
                 people.addRead( number + 1 )
                 text = f"""{ v.Number } - {v.English}
 {v.Persian}
-------------
 { v.ExampleEN }
 { v.ExampleFA }
-
+------------
 """
 
                 
@@ -184,8 +183,7 @@ def panel_people(bot: TelegramBot, update: Update, state: TelegramState):
                                                             , url=f"https://t.me/{APP_NAME}?start=fav-{v.Number}" )],
                                             [InlineKeyboardButton.a('اشتراک گذاری' 
                                                             ,switch_inline_query=text)],
-                                            [InlineKeyboardButton.a('بازگشت' 
-                                                            ,url=f"https://t.me/{APP_NAME}?start=back" )],
+                                            
                                         ]
                                     )
                                     
